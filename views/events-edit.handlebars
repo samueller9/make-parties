@@ -23,6 +23,11 @@
             <a href="/events/{{event.id}}" class='text-muted mr-2'>Cancel</a>
             <button type="submit" class="btn btn-primary" name="button">Update</button>
           </div>
+          <form action="/events/{{event.id}}?_method=PUT" method="post">
+          </form>
+          <form action="/events/{{event.id}}?_method=DELETE" method="POST">
+            <button type="submit" class='btn btn-danger'>Delete</button>
+          </form>
         </form>
       </div>
     </div>
