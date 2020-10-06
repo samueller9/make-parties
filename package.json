@@ -4,10 +4,9 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-  "start": "node app.js",
-  "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node app.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "",
   "license": "ISC",
   "dependencies": {
     "@handlebars/allow-prototype-access": "^1.0.3",
@@ -21,8 +20,7 @@
     "nodemon": "^2.0.4",
     "pg": "^8.3.3",
     "pg-hstore": "^2.3.3",
-    "sequelize": "^6.3.5"
-
-  },
+    "sequelize": "^6.3.5",
+    "sequelize-cli": "^6.2.0"
   }
 }
