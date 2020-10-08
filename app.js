@@ -10,6 +10,7 @@ const methodOverride = require('method-override')
 
 const app = express();
 require('./controllers/events')(app, models);
+require('./controllers/rsvps')(app, models);
 
 // Use "main" as our default layout
 app.engine('handlebars', exphbs({ defaultLayout: 'main', handlebars: allowInsecurePrototypeAccess(Handlebars) }));
