@@ -34,7 +34,6 @@ module.exports = function (app, models) {
     });
     
 
-
     // EDIT
     app.get('/events/:id/edit', (req, res) => {
       models.Event.findByPk(req.params.id).then((event) => {
