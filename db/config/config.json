@@ -9,7 +9,7 @@
  "test": {
    "username": null,
    "password": null,
-   "database": "my-db-test",
+   "database": "make-parties",
    "host": "127.0.0.1",
    "dialect": "postgres"
  },
