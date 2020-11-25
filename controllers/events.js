@@ -32,7 +32,7 @@ module.exports = function (app, models) {
             console.log(err.message);
         })
     });
-    
+
 
     // EDIT
     app.get('/events/:id/edit', (req, res) => {

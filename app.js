@@ -6,9 +6,10 @@ const { allowInsecurePrototypeAccess } = require('@handlebars/allow-prototype-ac
 const exphbs = require('express-handlebars');
 const bodyParser = require('body-parser');
 const models = require('./db/models');
-const methodOverride = require('method-override')
-const jwtExpress = require('express-jwt');
+const methodOverride = require('method-override');
 const cookieParser = require('cookie-parser');
+const jwtExpress = require('express-jwt');
+const jwt = require('jsonwebtoken');
 
 const app = express();
 
@@ -21,36 +22,66 @@ app.set('view engine', 'handlebars');
 app.use(bodyParser.urlencoded({ extended: false }));
 // override with POST having ?_method=DELETE or ?_method=PUT
 app.use(methodOverride('_method'))
-app.use(cookieParser)
+app.use(cookieParser());
 
-app.use(jwtExpress({
-    secret:"AUTH-SECRET",
-    algorithms: ['HS256'],
-    credentialsRequired: true,
-    getToken: function fromHeaderOrQuerystring (req) {
-      if (req.cookies.mpJWT) {
-        req.session.returnTo = null;
-        return req.cookies.mpJWT;
+// app.use(jwtExpress({
+//     secret:"AUTH-SECRET",
+//     algorithms: ['HS256'],
+//     credentialsRequired: true,
+//     getToken: function fromHeaderOrQuerystring (req) {
+//       if (req.cookies.mpJWT) {
+//         // req.session.returnTo = null;
+//         return req.cookies.mpJWT;
+//       }
+//       return null;
+//     }
+//   }).unless({ path: ['/', '/login', '/sign-up'] })
+// );
+
+app.use(function authenticateToken(req, res, next) {
+  // Gather the jwt access token from the cookie
+  const token = req.cookies.mpJWT;
+
+  if (token) {
+    jwt.verify(token, "AUTH-SECRET", (err, user) => {
+      if (err) {
+        console.log(err)
+        // redirect to login if not logged in and trying to access a protected route
+        res.redirect('/login')
       }
-      return null;
-    }
-  }).unless({ path: ['/login', '/sign-up'] })
-);
-
-app.use(req, res, next => {
-  console.log(req.user)
-  // if a valid JWT token is present
-  if (req.user) {
-    // Look up the user's record
-    models.User.findByPk(req.user.id, (currentUser) => {
-      // make the user object available in all controllers and templates
-      res.locals.currentUser = currentUser;
-    });
-  };
-  // next()
+      req.user = user
+      next(); // pass the execution off to whatever request the client intended
+    })
+  } else {
+    next();
+  }
 });
 
+app.use(function (req, res, next) {
+  console.log("Req.User:", req.user);
+  if (req.user) {
+    models.User.findByPk(req.user.id).then(currentUser => {
+      console.log("currentUser:",currentUser);
+      res.locals.currentUser = currentUser;
+      next();
+    }).catch(err => {
+      console.log(err);
+    })
+  } else {
+    next();
+  }
+});
 
+// app.use(cookieParser("ABCD"));
+// const expiryDate = new Date(Date.now() + 60 * 60 * 1000 * 24 * 60) // 60 days
+//
+// app.use(session({
+//   secret: process.env.SESSION_SECRET,
+//   cookie: {expires: expiryDate },
+//   store: sessionStore,
+//   resave: false
+// }));
+// });
 
 require('./controllers/events')(app, models);
 require('./controllers/rsvps')(app, models);

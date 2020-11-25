@@ -14,6 +14,11 @@ module.exports = (sequelize, DataTypes) => {
       // console.log(user);
       user.password = await bcrypt.hash(user.password, salt);
     })
+  User.prototype.comparePassword = function(password, done) {
+    bcrypt.compare(password, this.password, function(err, isMatch) {
+      return done(err, isMatch);
+    });
+  };
 
   User.associate = function(models) {
 
